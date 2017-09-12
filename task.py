@@ -1,8 +1,9 @@
 from schedule import Job
-
 from bot import Task, TaskBot
 from datetime import datetime
 from utils import CatchAndLog
+from typing import List
+from factory import TaskFactory
 
 
 class ScheduleTask(Task):
@@ -31,28 +32,36 @@ class FriendTask(ScheduleTask):
 class ResponseTask(Task):
     def __init__(self, plurk_id: int, content: str, qualifier: str):
         super().__init__()
-        self.plurk_id = plurk_id  # type:int
-        self.content = content  # type:str
-        self.qualifier = qualifier  # type:str
+        self._plurk_id = plurk_id  # type:int
+        self._content = content  # type:str
+        self._qualifier = qualifier  # type:str
 
     def _task(self):
-        self._add_response(self.plurk_id, self.content, self.qualifier)
+        self._add_response(self._plurk_id, self._content, self._qualifier)
 
 
-class PlurkTask(ScheduleTask):
+class ObserverTask(ScheduleTask):
     def __init__(self, refresh_limit: int = 20):
         super().__init__()
-        self.refresh_limit = refresh_limit  # type:int
+        self._refresh_limit = refresh_limit  # type:int
         self._run_period = 10
-        self.last_refresh = datetime.now()  # type:datetime
+        self._last_refresh = datetime.now()  # type:datetime
+        self._factory_list = []  # type:List[TaskFactory]
+
+    def add_factory(self, *args: TaskFactory):
+        self._factory_list.extend(args)
 
     @CatchAndLog()
     def _task(self):
         check_time = datetime.now()
-        response = self._get_plurks(self.last_refresh, self.refresh_limit)
-        self.last_refresh = check_time
+        response = self._get_plurks(self._last_refresh, self._refresh_limit)
+        self._last_refresh = check_time
         if response is not None and "plurks" in response:
             plurks = response["plurks"]
             for plurk in plurks:
-                if plurk["qualifier"] == "loves" and plurk["no_comments"] != 1:
-                    self.add_task(ResponseTask(plurk["plurk_id"], "Hello World!", "loves"))
+                for factory in self._factory_list:
+                    tasks = factory.create_task(plurk)
+                    if isinstance(tasks, list):
+                        self.add_task(*tasks)
+                    else:
+                        self.add_task(tasks)
