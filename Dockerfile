@@ -5,10 +5,10 @@ FROM python:3.6.2-slim
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-ADD . /app
+COPY . /app
 
 # Install any needed packages specified in requirements.txt
 RUN pip3 install -r requirements.txt
 
 # Run app.py when the container launches
-CMD ["python3", "run.py", "<api key>", "<api secret>", "<token>", "<token secret>"]
+CMD ["python3", "run.py", "echo ${appkey}", "echo ${appsecret}", "echo ${tokenkey}", "echo ${tokensecret}"]
