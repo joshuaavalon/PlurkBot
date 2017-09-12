@@ -45,7 +45,7 @@ class ObserverTask(ScheduleTask):
         super().__init__()
         self._refresh_limit = refresh_limit  # type:int
         self._run_period = 10
-        self._last_refresh = datetime.now()  # type:datetime
+        self._last_refresh = datetime.utcnow()  # type:datetime
         self._factory_list = []  # type:List[TaskFactory]
 
     def add_factory(self, *args: TaskFactory):
@@ -53,7 +53,7 @@ class ObserverTask(ScheduleTask):
 
     @CatchAndLog()
     def _task(self):
-        check_time = datetime.now()
+        check_time = datetime.utcnow()
         response = self._get_plurks(self._last_refresh, self._refresh_limit)
         self._last_refresh = check_time
         if response is not None and "plurks" in response:
