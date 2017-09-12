@@ -1,10 +1,11 @@
-from project import ProjectBuilder
-from task import FriendTask, ObserverTask, ResponseTask
 import logging
 import sys
 from typing import List
+
 from bot import Task
 from factory import TaskFactory
+from project import ProjectBuilder
+from task import FriendTask, ObserverTask, ResponseTask
 
 
 class TestFactory(TaskFactory):
@@ -16,10 +17,11 @@ class TestFactory(TaskFactory):
 
 
 def create_tasks() -> List[Task]:
-    tasks = [FriendTask()]
+    tasks = [FriendTask()]  # type:List[Task]
 
     observer_task = ObserverTask()
     observer_task.add_factory(TestFactory())
+    tasks.append(observer_task)
 
     return tasks
 
