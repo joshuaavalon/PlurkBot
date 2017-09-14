@@ -1,14 +1,17 @@
 from queue import Queue
 from typing import List
+
 from plurk_api import PlurkApi
 
-from bot import Bot, Task, TaskBot
+from plurk_bot.bot import Bot, Task, TaskBot
+from plurk_bot.event import EventQueue
 
 
 class Project:
     def __init__(self, bots: List[Bot], queue: Queue):
         self._bots = bots  # type:List[Bot]
         self._queue = queue  # type:Queue
+        self.event_queue = EventQueue()
 
     def start(self):
         for bot in self._bots:

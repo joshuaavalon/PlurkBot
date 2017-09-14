@@ -34,8 +34,8 @@ def check_type(variable, types, default=None):
     return default
 
 
-def try_get(try_dict: dict, key: str, default=None):
-    if not isinstance(try_dict, dict) or not isinstance(key, str):
+def try_get(try_dict: dict, key, default=None):
+    if not isinstance(try_dict, dict):
         return default
     if key in try_dict:
         return try_dict[key]

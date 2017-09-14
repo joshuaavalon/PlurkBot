@@ -1,5 +1,6 @@
 from typing import List, Union
-from bot import Task
+
+from plurk_bot.bot import Task
 
 
 class TaskFactory:

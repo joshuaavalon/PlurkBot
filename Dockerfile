@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.6.2-slim
+FROM python:3.6.2-alpine3.6
 
 # Set the working directory to /app
 WORKDIR /app
@@ -10,5 +10,4 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip3 install -r requirements.txt
 
-# Run app.py when the container launches
-CMD ["python3", "run.py", "echo ${appkey}", "echo ${appsecret}", "echo ${tokenkey}", "echo ${tokensecret}"]
+CMD python3 run.py $appkey $appsecret $tokenkey $tokensecret

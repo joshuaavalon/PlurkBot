@@ -1,9 +1,11 @@
-from schedule import Job
-from bot import Task, TaskBot
 from datetime import datetime
-from utils import CatchAndLog
 from typing import List
-from factory import TaskFactory
+
+from plurk_bot.bot import Task, TaskBot
+from plurk_bot.factory import TaskFactory
+from schedule import Job
+
+from plurk_bot.utils import CatchAndLog
 
 
 class ScheduleTask(Task):

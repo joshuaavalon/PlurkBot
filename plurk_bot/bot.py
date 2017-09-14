@@ -1,14 +1,16 @@
+import inspect
 import json
 import logging
-import inspect
-from plurk_api import PlurkApi
-from schedule import Scheduler
-from typing import Union
+from datetime import datetime
+from queue import Queue, Empty
 from threading import Thread
 from time import sleep
-from queue import Queue, Empty
-from datetime import datetime
-from utils import CatchAndLog
+from typing import Union
+
+from plurk_api import PlurkApi
+from schedule import Scheduler
+
+from plurk_bot.utils import CatchAndLog
 
 logging.getLogger("schedule").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
