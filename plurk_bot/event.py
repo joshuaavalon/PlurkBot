@@ -1,29 +1,31 @@
-import weakref
-from typing import Dict, Optional
+from typing import Optional, Callable, Set
+import logging
 
 __all__ = ["EventQueue"]
 
 
 class EventQueue:
     def __init__(self):
-        self._subscribers = {}  # type:Dict[type,set]
+        self._subscribers = {}
 
-    def subscribe(self, event_type: type, subscriber):
+    def subscribe(self, event_type: type, subscriber: Callable):
         if event_type is None:
             raise ValueError("event_type cannot be None.")
-        subscribers = self._subscribers.get(event_type)  # type:Optional[set]
+        if subscriber is None:
+            raise TypeError("subscriber cannot be None.")
+        subscribers = self._subscribers.get(event_type)  # type:Optional[Set[Callable]]
         if subscribers is None:
-            subscribers = weakref.WeakSet()
+            subscribers = set()
             self._subscribers[event_type] = subscribers
         subscribers.add(subscriber)
 
     def unsubscribe(self, event_type: type, subscriber):
         if event_type is None:
             raise ValueError("event_type cannot be None.")
-        subscribers = self._subscribers.get(event_type)  # type:Optional[set]
+        subscribers = self._subscribers.get(event_type)  # type:Optional[Set[Callable]]
         try:
             subscribers.remove(subscriber)
-        except (AttributeError, TypeError):
+        except (AttributeError, KeyError):
             pass
 
     def publish(self, event):
@@ -31,6 +33,9 @@ class EventQueue:
             if not issubclass(type(event), key):
                 continue
             subscribers = self._subscribers.get(key)
-            if subscribers is not None:
-                for subscriber in subscribers:
-                    subscriber.receive(event)
+            for subscriber in subscribers.copy():
+                try:
+                    subscriber(event)
+                except TypeError as e:
+                    logging.error(e)
+                    self.unsubscribe(key, subscriber)

@@ -41,3 +41,5 @@ def try_get(try_dict: dict, key, default=None):
         return try_dict[key]
     else:
         return default
+
+
